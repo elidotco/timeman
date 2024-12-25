@@ -18,6 +18,9 @@ const generateRefreshToken = (user) => {
 exports.register = async (req, res) => {
   const { name, email, password, role } = req.body;
   try {
+    const userCheck = await User.findOne({ email });
+    if (userCheck)
+      return res.status(500).json({ error: "Email already exits" });
     // Hash the password
     const hashedPassword = await bcrypt.hash(password, 10);
 
@@ -27,7 +30,7 @@ exports.register = async (req, res) => {
 
     res.status(201).json({ message: "User registered successfully" });
   } catch (error) {
-    res.status(500).json({ error: "Failed to register user" });
+    res.status(500).json({ error: `Failed to register user ${error}` });
   }
 };
 
